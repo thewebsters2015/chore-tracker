@@ -418,12 +418,20 @@
 </div>
 
 <div class="overlay" id="edit-modal">
-  <div class="modal-box">
+  <div class="modal-box" style="width:360px;max-width:95vw;">
     <h3 id="edit-title">Edit Chore</h3>
-    <label>Chore Name</label><input id="ec-name" />
-    <label>Time</label>
-    <select id="ec-time"><option>After School</option><option>Evening</option><option>Morning</option></select>
-    <div class="modal-btns">
+    <label style="font-size:11px;font-weight:700;color:var(--muted);display:block;margin-bottom:6px;">Select a chore from the list</label>
+    <div id="edit-preset-list" style="display:flex;flex-direction:column;gap:4px;max-height:240px;overflow-y:auto;margin-bottom:10px;padding-right:2px;"></div>
+    <div style="border-top:1px solid var(--bdr);padding-top:10px;">
+      <label style="font-size:11px;font-weight:700;color:var(--muted);display:block;margin-bottom:4px;">Other — type a custom name</label>
+      <div style="display:flex;gap:6px;">
+        <input id="ec-name" placeholder="Custom chore name..." style="flex:1;padding:7px 9px;border-radius:9px;border:1.5px solid var(--bdr);font-family:'Nunito',sans-serif;font-size:12px;background:var(--card);color:var(--txt);" />
+        <select id="ec-time" style="width:115px;padding:7px 6px;border-radius:9px;border:1.5px solid var(--bdr);font-family:'Nunito',sans-serif;font-size:12px;background:var(--card);color:var(--txt);">
+          <option>After School</option><option>Evening</option><option>Morning</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-btns" style="margin-top:10px;">
       <button class="btn-cancel" onclick="closeEdit()">Cancel</button>
       <button class="btn-del" onclick="deleteChore()">Delete</button>
       <button class="btn-save" onclick="saveChore()">Save</button>
@@ -433,25 +441,23 @@
 
 <div class="overlay" id="add-modal">
   <div class="modal-box" style="width:360px;max-width:95vw;">
-    <h3 id="add-modal-title">Add Chore</h3>
+    <h3 id="add-modal-title">Add New Chore</h3>
     <label style="font-size:11px;font-weight:700;color:var(--muted);display:block;margin-bottom:4px;">Day</label>
-    <select id="ad" onchange="renderPresetList()" style="width:100%;padding:7px 10px;border-radius:9px;border:1.5px solid var(--bdr);font-family:'Nunito',sans-serif;font-size:13px;margin-bottom:10px;background:var(--card);color:var(--txt);">
+    <select id="ad" style="width:100%;padding:7px 10px;border-radius:9px;border:1.5px solid var(--bdr);font-family:'Nunito',sans-serif;font-size:13px;margin-bottom:10px;background:var(--card);color:var(--txt);">
       <option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option><option>Sunday</option>
     </select>
-    <label style="font-size:11px;font-weight:700;color:var(--muted);display:block;margin-bottom:6px;">Quick-pick chores</label>
-    <div id="chore-preset-list" style="display:flex;flex-direction:column;gap:4px;max-height:220px;overflow-y:auto;margin-bottom:10px;padding-right:2px;"></div>
-    <div style="border-top:1px solid var(--bdr);padding-top:10px;">
-      <label style="font-size:11px;font-weight:700;color:var(--muted);display:block;margin-bottom:4px;">Or type a custom chore</label>
-      <div style="display:flex;gap:6px;">
-        <input id="ac-name" placeholder="Chore name..." style="flex:1;padding:7px 9px;border-radius:9px;border:1.5px solid var(--bdr);font-family:'Nunito',sans-serif;font-size:12px;background:var(--card);color:var(--txt);" />
-        <select id="ac-time" style="width:115px;padding:7px 6px;border-radius:9px;border:1.5px solid var(--bdr);font-family:'Nunito',sans-serif;font-size:12px;background:var(--card);color:var(--txt);">
-          <option>After School</option><option>Evening</option><option>Morning</option>
-        </select>
-      </div>
+    <label style="font-size:11px;font-weight:700;color:var(--muted);display:block;margin-bottom:4px;">Chore name</label>
+    <input id="ac-name" placeholder="Type the new chore name..." style="width:100%;padding:7px 10px;border-radius:9px;border:1.5px solid var(--bdr);font-family:'Nunito',sans-serif;font-size:13px;margin-bottom:8px;background:var(--card);color:var(--txt);" />
+    <label style="font-size:11px;font-weight:700;color:var(--muted);display:block;margin-bottom:4px;">Time</label>
+    <select id="ac-time" style="width:100%;padding:7px 10px;border-radius:9px;border:1.5px solid var(--bdr);font-family:'Nunito',sans-serif;font-size:13px;margin-bottom:10px;background:var(--card);color:var(--txt);">
+      <option>After School</option><option>Evening</option><option>Morning</option>
+    </select>
+    <div style="background:#fef9c3;border:1px solid #fde68a;border-radius:10px;padding:8px 12px;margin-bottom:10px;font-size:11px;color:#92400e;font-weight:600;">
+      💡 This chore will be added to the chore list so you can easily pick it next time from the edit panel.
     </div>
-    <div class="modal-btns" style="margin-top:10px;">
+    <div class="modal-btns">
       <button class="btn-cancel" onclick="closeAdd()">Cancel</button>
-      <button class="btn-save" onclick="confirmAdd()">Add Selected</button>
+      <button class="btn-save" onclick="confirmAdd()">Add Chore</button>
     </div>
   </div>
 </div>
@@ -744,24 +750,7 @@ function saveDayData(){
   const b=document.querySelector('.save-btn'); b.textContent='✅ Saved!'; b.style.background='var(--exc)';
   setTimeout(()=>{b.textContent='Save Today\'s Progress';b.style.background='';},1500);
 }
-function openEdit(girl,idx){
-  S.editTarget={girl,idx,day:S.curDay};
-  const c=S.chores[girl][S.curDay][idx];
-  document.getElementById('edit-title').textContent='Edit Chore — '+(girl==='zariah'?'Zariah':'Serenity');
-  document.getElementById('ec-name').value=c.name; document.getElementById('ec-time').value=c.time;
-  document.getElementById('edit-modal').classList.add('show');
-}
-function closeEdit(){document.getElementById('edit-modal').classList.remove('show');}
-function saveChore(){
-  if(!S.editTarget) return; const{girl,idx,day}=S.editTarget;
-  S.chores[girl][day][idx]={name:document.getElementById('ec-name').value,time:document.getElementById('ec-time').value};
-  sv(); closeEdit(); renderChores();
-}
-function deleteChore(){
-  if(!S.editTarget) return; const{girl,idx,day}=S.editTarget;
-  S.chores[girl][day].splice(idx,1); sv(); closeEdit(); renderChores();
-}
-const CHORE_PRESETS = [
+const DEFAULT_PRESETS = [
   { name: 'Clean table and under chair after eating', time: 'After School' },
   { name: 'Bedroom', time: 'After School' },
   { name: 'Dishes', time: 'Evening' },
@@ -777,37 +766,78 @@ const CHORE_PRESETS = [
   { name: 'Clean and organize bedroom side', time: 'After School' }
 ];
 
+function getChorePresets(){
+  return S.customPresets ? [...DEFAULT_PRESETS, ...S.customPresets] : [...DEFAULT_PRESETS];
+}
+
+function openEdit(girl,idx){
+  S.editTarget={girl,idx,day:S.curDay};
+  const c=S.chores[girl][S.curDay][idx];
+  document.getElementById('edit-title').textContent='Edit Chore — '+(girl==='zariah'?'Zariah':'Serenity');
+  document.getElementById('ec-name').value='';
+  document.getElementById('ec-time').value='After School';
+  renderEditPresetList(c.name);
+  document.getElementById('edit-modal').classList.add('show');
+}
+
+function renderEditPresetList(currentName){
+  const list = document.getElementById('edit-preset-list');
+  list.innerHTML = '';
+  const presets = getChorePresets();
+  presets.forEach((p,i) => {
+    const isSelected = p.name === currentName;
+    const row = document.createElement('label');
+    row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:9px;border:1.5px solid '+(isSelected?'#667eea':'var(--bdr)')+';background:'+(isSelected?'#eef2ff':'var(--bg)')+';cursor:pointer;font-size:12px;font-weight:600;color:var(--txt);transition:.1s;';
+    const cb = document.createElement('input');
+    cb.type = 'radio'; cb.name = 'edit-chore-pick'; cb.value = i;
+    cb.style.cssText = 'width:14px;height:14px;accent-color:#667eea;flex-shrink:0;cursor:pointer;';
+    if (isSelected) cb.checked = true;
+    cb.addEventListener('change', () => {
+      list.querySelectorAll('label').forEach(l => { l.style.border='1.5px solid var(--bdr)'; l.style.background='var(--bg)'; });
+      row.style.border='1.5px solid #667eea'; row.style.background='#eef2ff';
+      document.getElementById('ec-name').value='';
+    });
+    const nameSpan = document.createElement('span');
+    nameSpan.textContent = p.name; nameSpan.style.flex='1';
+    const timeBadge = document.createElement('span');
+    timeBadge.textContent = p.time;
+    timeBadge.style.cssText = 'margin-left:auto;font-size:10px;font-weight:700;padding:1px 6px;border-radius:8px;background:#e0f2fe;color:#0369a1;white-space:nowrap;flex-shrink:0;';
+    row.appendChild(cb); row.appendChild(nameSpan); row.appendChild(timeBadge);
+    list.appendChild(row);
+  });
+}
+
+function closeEdit(){document.getElementById('edit-modal').classList.remove('show');}
+
+function saveChore(){
+  if(!S.editTarget) return;
+  const{girl,idx,day}=S.editTarget;
+  const customName = document.getElementById('ec-name').value.trim();
+  const customTime = document.getElementById('ec-time').value;
+  const picked = document.querySelector('input[name="edit-chore-pick"]:checked');
+  let name, time;
+  if(customName){ name=customName; time=customTime; }
+  else if(picked){ const p=getChorePresets()[parseInt(picked.value)]; name=p.name; time=p.time; }
+  else { return; }
+  S.chores[girl][day][idx]={name,time};
+  sv(); closeEdit(); renderChores();
+}
+
+function deleteChore(){
+  if(!S.editTarget) return; const{girl,idx,day}=S.editTarget;
+  S.chores[girl][day].splice(idx,1); sv(); closeEdit(); renderChores();
+}
+
 let addModalGirl = 'zariah';
 
 function openAdd(girl){
   addModalGirl = girl || 'zariah';
   const gn = addModalGirl.charAt(0).toUpperCase() + addModalGirl.slice(1);
-  document.getElementById('add-modal-title').textContent = 'Add Chore — ' + gn;
+  document.getElementById('add-modal-title').textContent = 'Add New Chore — ' + gn;
   document.getElementById('ad').value = S.curDay;
   document.getElementById('ac-name').value = '';
-  renderPresetList();
+  document.getElementById('ac-time').value = 'After School';
   document.getElementById('add-modal').classList.add('show');
-}
-
-function renderPresetList(){
-  const day = document.getElementById('ad').value || S.curDay;
-  const existing = new Set((S.chores[addModalGirl][day]||[]).map(c=>c.name));
-  const list = document.getElementById('chore-preset-list');
-  list.innerHTML = '';
-  CHORE_PRESETS.forEach((p,i) => {
-    const isAdded = existing.has(p.name);
-    const row = document.createElement('label');
-    row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:9px;border:1px solid var(--bdr);background:' + (isAdded ? 'var(--s-light)' : 'var(--bg)') + ';cursor:pointer;font-size:12px;font-weight:600;color:var(--txt);transition:.1s;';
-    const cb = document.createElement('input');
-    cb.type = 'checkbox'; cb.id = 'cp-' + i;
-    cb.style.cssText = 'width:14px;height:14px;accent-color:#667eea;flex-shrink:0;cursor:pointer;';
-    if (isAdded) { cb.checked = true; cb.disabled = true; row.style.opacity = '0.6'; }
-    const timeBadge = '<span style="margin-left:auto;font-size:10px;font-weight:700;padding:1px 6px;border-radius:8px;background:#e0f2fe;color:#0369a1;white-space:nowrap;">' + p.time + '</span>';
-    row.appendChild(cb);
-    row.innerHTML += p.name + timeBadge;
-    row.prepend(cb);
-    list.appendChild(row);
-  });
 }
 
 function closeAdd(){document.getElementById('add-modal').classList.remove('show');}
@@ -815,35 +845,26 @@ function closeAdd(){document.getElementById('add-modal').classList.remove('show'
 function confirmAdd(){
   const girl = addModalGirl;
   const day = document.getElementById('ad').value;
-  const customName = document.getElementById('ac-name').value.trim();
-  const customTime = document.getElementById('ac-time').value;
+  const name = document.getElementById('ac-name').value.trim();
+  const time = document.getElementById('ac-time').value;
+  if(!name) return;
+  if(!S.customPresets) S.customPresets = [];
+  const alreadyInList = getChorePresets().some(p => p.name.toLowerCase() === name.toLowerCase());
+  if(!alreadyInList){ S.customPresets.push({name,time}); }
   const existing = (S.chores[girl][day]||[]).length;
   const limit = CHORE_LIMITS[girl];
-
-  const selected = [];
-  CHORE_PRESETS.forEach((p,i) => {
-    const cb = document.getElementById('cp-' + i);
-    if (cb && cb.checked && !cb.disabled) selected.push({name:p.name,time:p.time});
-  });
-  if (customName) selected.push({name:customName,time:customTime});
-
-  if (selected.length === 0) { closeAdd(); return; }
-
-  const wouldExceed = existing + selected.length > limit;
-
   closeAdd();
-
-  if (wouldExceed) {
-    if (girl === 'zariah') {
-      showAlert({hard:true,title:'Heads up!',msg:`Heads up! Zariah already has 3 chores today. You can\'t add any more for today.`});
+  if(existing >= limit){
+    if(girl==='zariah'){
+      showAlert({hard:true,title:'Heads up!',msg:"Heads up! Zariah already has 3 chores today. You can't add any more for today."});
       return;
     } else {
-      S.pendingAddChore = {girl,day,items:selected};
-      showAlert({hard:false,title:'Heads up!',msg:`Serenity would have ${existing + selected.length} chores on ${day}. Are you sure you want to add?`});
+      S.pendingAddChore={girl,day,items:[{name,time}]};
+      showAlert({hard:false,title:'Heads up!',msg:`Serenity already has ${existing} chores on ${day}. Are you sure you want to add another one?`});
       return;
     }
   }
-  doAddChores({girl,day,items:selected});
+  doAddChores({girl,day,items:[{name,time}]});
 }
 
 function doAddChore({girl,day,name,time}){
