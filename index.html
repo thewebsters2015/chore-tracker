@@ -356,19 +356,20 @@
   </div>
 
   <div id="sec-history" class="sec">
-    <div class="stats-grid" id="report-stats"></div>
-    <div class="report-filter">
-      <select id="fg" onchange="renderHistory()"><option value="all">All Girls</option><option value="zariah">Zariah</option><option value="serenity">Serenity</option></select>
-      <select id="fs" onchange="renderHistory()"><option value="all">All Ratings</option><option value="excellent">Excellent Job!</option><option value="needs">Needs Work</option></select>
-      <select id="fw" onchange="renderHistory()"><option value="4">Last 4 weeks</option><option value="8">Last 8 weeks</option><option value="all">All time</option></select>
+
+    <!-- TEAM COMBINED — large hero display -->
+    <div class="card" style="text-align:center;padding:28px 20px 24px;margin-bottom:12px;border-top:5px solid #667eea;">
+      <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:6px;">Team Combined Score</div>
+      <div id="team-pct-hero" style="font-family:'Fredoka One',cursive;font-size:72px;line-height:1;color:#667eea;margin-bottom:4px;">—</div>
+      <div style="font-size:13px;color:var(--muted);font-weight:600;margin-bottom:16px;">Excellent Job! ratings combined</div>
+      <div style="background:#e2e8f0;border-radius:12px;height:22px;overflow:hidden;margin:0 auto;max-width:480px;position:relative;">
+        <div id="team-bar-hero" style="height:100%;border-radius:12px;background:#667eea;width:0%;transition:width .8s ease;"></div>
+        <div id="team-bar-label" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;mix-blend-mode:difference;"></div>
+      </div>
+      <div id="team-bar-sublabel" style="font-size:11px;color:var(--muted);font-weight:600;margin-top:8px;"></div>
     </div>
-    <div class="card" style="overflow-x:auto;">
-      <table class="report-table">
-        <thead><tr><th style="width:80px;">Date</th><th style="width:90px;">Girl</th><th>Chore</th><th style="width:90px;">Time</th><th style="width:90px;">Rating</th></tr></thead>
-        <tbody id="report-body"></tbody>
-      </table>
-      <div id="report-empty" class="empty-msg" style="display:none;">No records found.</div>
-    </div>
+
+    <!-- PARENT-ONLY INDIVIDUAL SCORES (tucked below) -->
     <div class="parent-section">
       <div class="parent-divider">
         <div class="parent-divider-line"></div>
@@ -379,6 +380,23 @@
       <div class="card">
         <div style="font-weight:800;font-size:14px;margin-bottom:10px;">🍦 Ice Cream Dates Earned</div>
         <div id="ice-history" class="ice-history"></div>
+      </div>
+    </div>
+
+    <!-- CHORE LOG -->
+    <div style="margin-top:14px;">
+      <div style="font-weight:800;font-size:14px;margin-bottom:10px;color:var(--muted);">📋 Chore Log</div>
+      <div class="report-filter">
+        <select id="fg" onchange="renderHistory()"><option value="all">All Girls</option><option value="zariah">Zariah</option><option value="serenity">Serenity</option></select>
+        <select id="fs" onchange="renderHistory()"><option value="all">All Ratings</option><option value="excellent">Excellent Job!</option><option value="needs">Needs Work</option></select>
+        <select id="fw" onchange="renderHistory()"><option value="4">Last 4 weeks</option><option value="8">Last 8 weeks</option><option value="all">All time</option></select>
+      </div>
+      <div class="card" style="overflow-x:auto;">
+        <table class="report-table">
+          <thead><tr><th style="width:80px;">Date</th><th style="width:90px;">Girl</th><th>Chore</th><th style="width:90px;">Time</th><th style="width:90px;">Rating</th></tr></thead>
+          <tbody id="report-body"></tbody>
+        </table>
+        <div id="report-empty" class="empty-msg" style="display:none;">No records found.</div>
       </div>
     </div>
   </div>
@@ -511,22 +529,22 @@ const LIBRARY = [
 
 const BASE_CHORES = {
   zariah: {
-    Monday:    [{ name: 'Clean table and under chair after eating', time: 'After School' }],
-    Tuesday:   [{ name: 'Clean table and under chair after eating', time: 'After School' }, { name: 'Feed outside cats', time: 'Evening' }],
-    Wednesday: [{ name: 'Clean table and under chair after eating', time: 'After School' }],
-    Thursday:  [{ name: 'Clean and organize bedroom side', time: 'After School' }, { name: 'Clean table and under chair after eating', time: 'After School' }],
-    Friday:    [{ name: 'Clean table and under chair after eating', time: 'After School' }, { name: 'Feed outside cats', time: 'Evening' }],
-    Saturday:  [{ name: 'Vacuum', time: 'Morning' }, { name: 'Clean bathroom', time: 'Evening' }],
-    Sunday:    [{ name: 'Clean table and under chair after eating', time: 'Evening' }, { name: 'Wash dishes and put away', time: 'Evening' }]
+    Monday:    [{ name: 'Clean table & under chair after eating', time: 'After School' }],
+    Tuesday:   [{ name: 'Clean table & under chair after eating', time: 'After School' }, { name: 'Feed outside cats', time: 'Evening' }],
+    Wednesday: [{ name: 'Clean table & under chair after eating', time: 'After School' }],
+    Thursday:  [{ name: 'Clean & organize bedroom side', time: 'After School' }, { name: 'Clean table & under chair after eating', time: 'After School' }],
+    Friday:    [{ name: 'Clean table & under chair after eating', time: 'After School' }, { name: 'Feed outside cats', time: 'Evening' }],
+    Saturday:  [{ name: 'Vacuum upstairs and living room rug', time: 'Morning' }, { name: 'Clean bathroom', time: 'Evening' }],
+    Sunday:    [{ name: 'Clean table & under chair after eating', time: 'Evening' }, { name: 'Wash dishes & put them away', time: 'Evening' }]
   },
   serenity: {
-    Monday:    [{ name: 'Clean table and under chair after eating', time: 'After School' }, { name: 'Dishes', time: 'Evening' }, { name: 'Laundry', time: 'After School' }, { name: 'Feed cats & give fresh water', time: 'Evening' }],
-    Tuesday:   [{ name: 'Clean table and under chair after eating', time: 'After School' }, { name: 'Craft room', time: 'After School' }, { name: 'Trash', time: 'After School' }, { name: 'Bathroom cleanup', time: 'Evening' }],
-    Wednesday: [{ name: 'Clean table and under chair after eating', time: 'After School' }, { name: 'Dishes', time: 'Evening' }, { name: 'Vacuum', time: 'Evening' }, { name: 'Feed cats & give fresh water', time: 'Evening' }],
-    Thursday:  [{ name: 'Clean table and under chair after eating', time: 'After School' }, { name: 'Bedroom', time: 'After School' }],
-    Friday:    [{ name: 'Clean table and under chair after eating', time: 'After School' }, { name: 'Tidy up and organize the coffee table', time: 'After School' }, { name: 'Feed cats & give fresh water', time: 'Evening' }],
-    Saturday:  [{ name: 'Clean table and under chair after eating', time: 'After School' }, { name: 'Craft room', time: 'After School' }, { name: 'Vanity', time: 'After School' }],
-    Sunday:    [{ name: 'Clean table and under chair after eating', time: 'After School' }, { name: 'Organize kiddo bookshelves & cubbies', time: 'After School' }, { name: 'Trash', time: 'After School' }]
+    Monday:    [{ name: 'Clean table & under chair after eating', time: 'After School' }, { name: 'Wash dishes & put them away', time: 'Evening' }, { name: 'Do laundry and put clothing away', time: 'After School' }, { name: 'Feed cats & give fresh water', time: 'Evening' }],
+    Tuesday:   [{ name: 'Clean table & under chair after eating', time: 'After School' }, { name: 'Craft room', time: 'After School' }, { name: 'Collect & throw away trash', time: 'After School' }, { name: 'Bathroom cleanup', time: 'Evening' }],
+    Wednesday: [{ name: 'Clean table & under chair after eating', time: 'After School' }, { name: 'Wash dishes & put them away', time: 'Evening' }, { name: 'Vacuum upstairs and living room rug', time: 'Evening' }, { name: 'Feed cats & give fresh water', time: 'Evening' }],
+    Thursday:  [{ name: 'Clean table & under chair after eating', time: 'After School' }, { name: 'Bedroom', time: 'After School' }],
+    Friday:    [{ name: 'Clean table & under chair after eating', time: 'After School' }, { name: 'Tidy up and organize the coffee table', time: 'After School' }, { name: 'Feed cats & give fresh water', time: 'Evening' }],
+    Saturday:  [{ name: 'Clean table & under chair after eating', time: 'After School' }, { name: 'Craft room', time: 'After School' }, { name: 'Vanity', time: 'After School' }],
+    Sunday:    [{ name: 'Clean table & under chair after eating', time: 'After School' }, { name: 'Organize kiddo bookshelves & cubbies', time: 'After School' }, { name: 'Collect & throw away trash', time: 'After School' }]
   }
 };
 
@@ -751,19 +769,19 @@ function saveDayData(){
   setTimeout(()=>{b.textContent='Save Today\'s Progress';b.style.background='';},1500);
 }
 const DEFAULT_PRESETS = [
-  { name: 'Clean table and under chair after eating', time: 'After School' },
+  { name: 'Clean table & under chair after eating', time: 'After School' },
   { name: 'Bedroom', time: 'After School' },
-  { name: 'Dishes', time: 'Evening' },
+  { name: 'Wash dishes & put them away', time: 'Evening' },
   { name: 'Feed cats & give fresh water', time: 'Evening' },
   { name: 'Craft room', time: 'After School' },
-  { name: 'Clean and organize vanity', time: 'After School' },
+  { name: 'Clean & organize vanity', time: 'After School' },
   { name: 'Organize kiddo bookshelves & cubbies', time: 'After School' },
-  { name: 'Trash', time: 'After School' },
-  { name: 'Vacuum', time: 'Morning' },
+  { name: 'Collect & throw away trash', time: 'After School' },
+  { name: 'Vacuum upstairs and living room rug', time: 'Morning' },
   { name: 'Bathroom cleanup', time: 'Evening' },
-  { name: 'Laundry', time: 'After School' },
+  { name: 'Do laundry and put clothing away', time: 'After School' },
   { name: 'Tidy arrival center', time: 'After School' },
-  { name: 'Clean and organize bedroom side', time: 'After School' }
+  { name: 'Clean & organize bedroom side', time: 'After School' }
 ];
 
 function getChorePresets(){
@@ -1076,15 +1094,29 @@ function renderIceHistory(){
   });
 }
 function renderStats(){
-  const st={z:{exc:0,tot:0},s:{exc:0,tot:0}};
-  Object.entries(S.ratings).forEach(([k,v])=>{const g=k.split('|')[1]==='zariah'?'z':'s';st[g].tot++;if(v==='excellent')st[g].exc++;});
-  const zp=st.z.tot>0?Math.round(st.z.exc/st.z.tot*100):0;
-  const sp=st.s.tot>0?Math.round(st.s.exc/st.s.tot*100):0;
-  const prog=getTeamProgress();
-  document.getElementById('report-stats').innerHTML=`
-    <div class="stat-card"><div class="stat-num" style="color:var(--plum)">${zp}%</div><div class="stat-lbl">Zariah excellent</div><div class="pbar"><div class="pbar-fill fill-z" style="width:${zp}%"></div></div></div>
-    <div class="stat-card"><div class="stat-num" style="color:var(--mint)">${sp}%</div><div class="stat-lbl">Serenity excellent</div><div class="pbar"><div class="pbar-fill fill-s" style="width:${sp}%"></div></div></div>
-    <div class="stat-card"><div class="stat-num" style="color:var(--ice)">${prog.qualWeeks}/4</div><div class="stat-lbl">Team qualifying weeks</div><div class="pbar"><div class="pbar-fill fill-team" style="width:${Math.round(prog.qualWeeks/4*100)}%"></div></div></div>`;
+  let allExc=0, allTot=0;
+  Object.entries(S.ratings).forEach(([k,v])=>{allTot++;if(v==='excellent')allExc++;});
+  const teamPct = allTot>0 ? Math.round(allExc/allTot*100) : null;
+  const prog = getTeamProgress();
+  const hero = document.getElementById('team-pct-hero');
+  const bar  = document.getElementById('team-bar-hero');
+  const lbl  = document.getElementById('team-bar-label');
+  const sub  = document.getElementById('team-bar-sublabel');
+  if(teamPct===null){
+    hero.textContent='—';
+    bar.style.width='0%';
+    lbl.textContent='';
+    sub.textContent='No chores rated yet — start rating to see your team score!';
+    hero.style.color='var(--muted)';
+  } else {
+    hero.textContent=teamPct+'%';
+    const barColor = teamPct>=80?'#10b981':teamPct>=60?'#f59e0b':'#f97316';
+    hero.style.color = barColor;
+    bar.style.background = barColor;
+    bar.style.width = teamPct+'%';
+    lbl.textContent = teamPct+'%';
+    sub.textContent = allExc+' of '+allTot+' chores rated Excellent Job! • '+prog.qualWeeks+'/4 qualifying weeks';
+  }
 }
 function renderHistory(){
   const fg=document.getElementById('fg').value; const fs=document.getElementById('fs').value; const fw=document.getElementById('fw').value;
