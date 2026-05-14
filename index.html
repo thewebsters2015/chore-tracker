@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Chore Tracker — Zariah &amp; Serenity</title>
+  <title>Chore Tracker — Zariah and Serenity</title>
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
@@ -251,7 +251,7 @@
     <span style="font-size:28px;">⭐</span>
     <div>
       <h1>Chore Tracker</h1>
-      <p>Zariah &amp; Serenity's Daily Chore Board</p>
+      <p>Zariah and Serenity's Daily Chore Board</p>
     </div>
     <div class="hdr-right">
       <div class="team-mini">
@@ -529,22 +529,22 @@ const LIBRARY = [
 
 const BASE_CHORES = {
   zariah: {
-    Monday:    [{ name: 'Clean table & under chair after eating', time: 'After School' }],
-    Tuesday:   [{ name: 'Clean table & under chair after eating', time: 'After School' }, { name: 'Feed outside cats', time: 'Evening' }],
-    Wednesday: [{ name: 'Clean table & under chair after eating', time: 'After School' }],
-    Thursday:  [{ name: 'Clean & organize bedroom side', time: 'After School' }, { name: 'Clean table & under chair after eating', time: 'After School' }],
-    Friday:    [{ name: 'Clean table & under chair after eating', time: 'After School' }, { name: 'Feed outside cats', time: 'Evening' }],
-    Saturday:  [{ name: 'Vacuum upstairs and living room rug', time: 'Morning' }, { name: 'Clean bathroom', time: 'Evening' }],
-    Sunday:    [{ name: 'Clean table & under chair after eating', time: 'Evening' }, { name: 'Wash dishes & put them away', time: 'Evening' }]
+    Monday:    [{ name: 'Clean table and under chair after eating', time: 'After School' }],
+    Tuesday:   [{ name: 'Clean table and under chair after eating', time: 'After School' }, { name: 'Feed outside cats', time: 'Evening' }],
+    Wednesday: [{ name: 'Clean table and under chair after eating', time: 'After School' }],
+    Thursday:  [{ name: 'Clean and organize bedroom side', time: 'After School' }, { name: 'Clean table and under chair after eating', time: 'After School' }],
+    Friday:    [{ name: 'Clean table and under chair after eating', time: 'After School' }, { name: 'Feed outside cats', time: 'Evening' }],
+    Saturday:  [{ name: 'Vacuum upstairs and living room rug', time: 'Morning' }, { name: 'Clean bathroom toilet, bath tub, and collect trash', time: 'Evening' }],
+    Sunday:    [{ name: 'Clean table and under chair after eating', time: 'Evening' }, { name: 'Clean dishes and put them away in proper place', time: 'Evening' }]
   },
   serenity: {
-    Monday:    [{ name: 'Clean table & under chair after eating', time: 'After School' }, { name: 'Wash dishes & put them away', time: 'Evening' }, { name: 'Do laundry and put clothing away', time: 'After School' }, { name: 'Feed cats & give fresh water', time: 'Evening' }],
-    Tuesday:   [{ name: 'Clean table & under chair after eating', time: 'After School' }, { name: 'Craft room', time: 'After School' }, { name: 'Collect & throw away trash', time: 'After School' }, { name: 'Bathroom cleanup', time: 'Evening' }],
-    Wednesday: [{ name: 'Clean table & under chair after eating', time: 'After School' }, { name: 'Wash dishes & put them away', time: 'Evening' }, { name: 'Vacuum upstairs and living room rug', time: 'Evening' }, { name: 'Feed cats & give fresh water', time: 'Evening' }],
-    Thursday:  [{ name: 'Clean table & under chair after eating', time: 'After School' }, { name: 'Bedroom', time: 'After School' }],
-    Friday:    [{ name: 'Clean table & under chair after eating', time: 'After School' }, { name: 'Tidy up and organize the coffee table', time: 'After School' }, { name: 'Feed cats & give fresh water', time: 'Evening' }],
-    Saturday:  [{ name: 'Clean table & under chair after eating', time: 'After School' }, { name: 'Craft room', time: 'After School' }, { name: 'Vanity', time: 'After School' }],
-    Sunday:    [{ name: 'Clean table & under chair after eating', time: 'After School' }, { name: 'Organize kiddo bookshelves & cubbies', time: 'After School' }, { name: 'Collect & throw away trash', time: 'After School' }]
+    Monday:    [{ name: 'Clean table and under chair after eating', time: 'After School' }, { name: 'Clean dishes and put them away in proper place', time: 'Evening' }, { name: 'Do laundry and put clothing away', time: 'After School' }, { name: 'Feed cats and give fresh water', time: 'Evening' }],
+    Tuesday:   [{ name: 'Clean table and under chair after eating', time: 'After School' }, { name: 'Craft room', time: 'After School' }, { name: 'Collect and throw away trash', time: 'After School' }, { name: 'Clean bathroom toilet, bath tub, and collect trash', time: 'Evening' }],
+    Wednesday: [{ name: 'Clean table and under chair after eating', time: 'After School' }, { name: 'Clean dishes and put them away in proper place', time: 'Evening' }, { name: 'Vacuum upstairs and living room rug', time: 'Evening' }, { name: 'Feed cats and give fresh water', time: 'Evening' }],
+    Thursday:  [{ name: 'Clean table and under chair after eating', time: 'After School' }, { name: 'Tidy up your side of bedroom', time: 'After School' }],
+    Friday:    [{ name: 'Clean table and under chair after eating', time: 'After School' }, { name: 'Tidy up and organize the coffee table', time: 'After School' }, { name: 'Feed cats and give fresh water', time: 'Evening' }],
+    Saturday:  [{ name: 'Clean table and under chair after eating', time: 'After School' }, { name: 'Craft room', time: 'After School' }, { name: 'Clean and organize vanity', time: 'After School' }],
+    Sunday:    [{ name: 'Clean table and under chair after eating', time: 'After School' }, { name: 'Organize kiddo bookshelves and cubbies', time: 'After School' }, { name: 'Collect and throw away trash', time: 'After School' }]
   }
 };
 
@@ -769,23 +769,25 @@ function saveDayData(){
   setTimeout(()=>{b.textContent='Save Today\'s Progress';b.style.background='';},1500);
 }
 const DEFAULT_PRESETS = [
-  { name: 'Clean table & under chair after eating', time: 'After School' },
-  { name: 'Bedroom', time: 'After School' },
-  { name: 'Wash dishes & put them away', time: 'Evening' },
-  { name: 'Feed cats & give fresh water', time: 'Evening' },
+  { name: 'Clean table and under chair after eating', time: 'After School' },
+  { name: 'Tidy up your side of bedroom', time: 'After School' },
+  { name: 'Clean dishes and put them away in proper place', time: 'Evening' },
+  { name: 'Feed cats and give fresh water', time: 'Evening' },
   { name: 'Craft room', time: 'After School' },
-  { name: 'Clean & organize vanity', time: 'After School' },
-  { name: 'Organize kiddo bookshelves & cubbies', time: 'After School' },
-  { name: 'Collect & throw away trash', time: 'After School' },
+  { name: 'Clean and organize vanity', time: 'After School' },
+  { name: 'Organize kiddo bookshelves and cubbies', time: 'After School' },
+  { name: 'Collect and throw away trash', time: 'After School' },
   { name: 'Vacuum upstairs and living room rug', time: 'Morning' },
-  { name: 'Bathroom cleanup', time: 'Evening' },
+  { name: 'Clean bathroom toilet, bath tub, and collect trash', time: 'Evening' },
   { name: 'Do laundry and put clothing away', time: 'After School' },
   { name: 'Tidy arrival center', time: 'After School' },
-  { name: 'Clean & organize bedroom side', time: 'After School' }
+  { name: 'Clean and organize bedroom side', time: 'After School' }
 ];
 
 function getChorePresets(){
-  return S.customPresets ? [...DEFAULT_PRESETS, ...S.customPresets] : [...DEFAULT_PRESETS];
+  return S.customPresets && S.customPresets.length > 0
+    ? [...S.customPresets, ...DEFAULT_PRESETS]
+    : [...DEFAULT_PRESETS];
 }
 
 function openEdit(girl,idx){
