@@ -432,18 +432,26 @@
 </div>
 
 <div class="overlay" id="add-modal">
-  <div class="modal-box">
-    <h3>Add Chore</h3>
-    <label>Girl</label>
-    <select id="ag"><option value="zariah">Zariah</option><option value="serenity">Serenity</option></select>
-    <label>Day</label>
-    <select id="ad"><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option><option>Sunday</option></select>
-    <label>Chore Name</label><input id="ac-name" />
-    <label>Time</label>
-    <select id="ac-time"><option>After School</option><option>Evening</option><option>Morning</option></select>
-    <div class="modal-btns">
+  <div class="modal-box" style="width:360px;max-width:95vw;">
+    <h3 id="add-modal-title">Add Chore</h3>
+    <label style="font-size:11px;font-weight:700;color:var(--muted);display:block;margin-bottom:4px;">Day</label>
+    <select id="ad" onchange="renderPresetList()" style="width:100%;padding:7px 10px;border-radius:9px;border:1.5px solid var(--bdr);font-family:'Nunito',sans-serif;font-size:13px;margin-bottom:10px;background:var(--card);color:var(--txt);">
+      <option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option><option>Sunday</option>
+    </select>
+    <label style="font-size:11px;font-weight:700;color:var(--muted);display:block;margin-bottom:6px;">Quick-pick chores</label>
+    <div id="chore-preset-list" style="display:flex;flex-direction:column;gap:4px;max-height:220px;overflow-y:auto;margin-bottom:10px;padding-right:2px;"></div>
+    <div style="border-top:1px solid var(--bdr);padding-top:10px;">
+      <label style="font-size:11px;font-weight:700;color:var(--muted);display:block;margin-bottom:4px;">Or type a custom chore</label>
+      <div style="display:flex;gap:6px;">
+        <input id="ac-name" placeholder="Chore name..." style="flex:1;padding:7px 9px;border-radius:9px;border:1.5px solid var(--bdr);font-family:'Nunito',sans-serif;font-size:12px;background:var(--card);color:var(--txt);" />
+        <select id="ac-time" style="width:115px;padding:7px 6px;border-radius:9px;border:1.5px solid var(--bdr);font-family:'Nunito',sans-serif;font-size:12px;background:var(--card);color:var(--txt);">
+          <option>After School</option><option>Evening</option><option>Morning</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-btns" style="margin-top:10px;">
       <button class="btn-cancel" onclick="closeAdd()">Cancel</button>
-      <button class="btn-save" onclick="confirmAdd()">Add</button>
+      <button class="btn-save" onclick="confirmAdd()">Add Selected</button>
     </div>
   </div>
 </div>
@@ -657,7 +665,7 @@ function showAlert(opts) {
     const bc=document.createElement('button'); bc.className='alert-ok'; bc.style.cssText='background:var(--bg);color:var(--muted);border:1.5px solid var(--bdr);';
     bc.textContent='Cancel'; bc.onclick=()=>{S.pendingAddChore=null;document.getElementById('alert-modal').classList.remove('show');};
     const bp=document.createElement('button'); bp.className='alert-ok orange';
-    bp.textContent='Add Anyway'; bp.onclick=()=>{document.getElementById('alert-modal').classList.remove('show');if(S.pendingAddChore){doAddChore(S.pendingAddChore);S.pendingAddChore=null;}};
+    bp.textContent='Add Anyway'; bp.onclick=()=>{document.getElementById('alert-modal').classList.remove('show');if(S.pendingAddChore){if(S.pendingAddChore.items){doAddChores(S.pendingAddChore);}else{doAddChore(S.pendingAddChore);}S.pendingAddChore=null;}};
     row.appendChild(bc); row.appendChild(bp); btns.appendChild(row);
   }
   document.getElementById('alert-modal').classList.add('show');
@@ -753,36 +761,99 @@ function deleteChore(){
   if(!S.editTarget) return; const{girl,idx,day}=S.editTarget;
   S.chores[girl][day].splice(idx,1); sv(); closeEdit(); renderChores();
 }
+const CHORE_PRESETS = [
+  { name: 'Clean table and under chair after eating', time: 'After School' },
+  { name: 'Bedroom', time: 'After School' },
+  { name: 'Dishes', time: 'Evening' },
+  { name: 'Feed cats & give fresh water', time: 'Evening' },
+  { name: 'Craft room', time: 'After School' },
+  { name: 'Clean and organize vanity', time: 'After School' },
+  { name: 'Organize kiddo bookshelves & cubbies', time: 'After School' },
+  { name: 'Trash', time: 'After School' },
+  { name: 'Vacuum', time: 'Morning' },
+  { name: 'Bathroom cleanup', time: 'Evening' },
+  { name: 'Laundry', time: 'After School' },
+  { name: 'Tidy arrival center', time: 'After School' },
+  { name: 'Clean and organize bedroom side', time: 'After School' }
+];
+
+let addModalGirl = 'zariah';
+
 function openAdd(girl){
-  document.getElementById('ag').value=girl||'zariah';
-  document.getElementById('ad').value=S.curDay;
-  document.getElementById('ac-name').value='';
+  addModalGirl = girl || 'zariah';
+  const gn = addModalGirl.charAt(0).toUpperCase() + addModalGirl.slice(1);
+  document.getElementById('add-modal-title').textContent = 'Add Chore — ' + gn;
+  document.getElementById('ad').value = S.curDay;
+  document.getElementById('ac-name').value = '';
+  renderPresetList();
   document.getElementById('add-modal').classList.add('show');
 }
-function closeAdd(){document.getElementById('add-modal').classList.remove('show');}
-function confirmAdd(){
-  const girl=document.getElementById('ag').value;
-  const day=document.getElementById('ad').value;
-  const name=document.getElementById('ac-name').value.trim();
-  const time=document.getElementById('ac-time').value;
-  if(!name) return;
-  const existing=(S.chores[girl][day]||[]).length;
-  const limit=CHORE_LIMITS[girl];
-  closeAdd();
-  if(existing>=limit){
-    if(girl==='zariah'){
-      showAlert({hard:true,title:'Heads up!',msg:`Heads up! Zariah already has 3 chores today. You can't add any more for today.`});
-    } else {
-      S.pendingAddChore={girl,day,name,time};
-      showAlert({hard:false,title:'Heads up!',msg:`Serenity already has ${existing} chores on ${day}. Are you sure you want to add another one?`});
-    }
-    return;
-  }
-  doAddChore({girl,day,name,time});
+
+function renderPresetList(){
+  const day = document.getElementById('ad').value || S.curDay;
+  const existing = new Set((S.chores[addModalGirl][day]||[]).map(c=>c.name));
+  const list = document.getElementById('chore-preset-list');
+  list.innerHTML = '';
+  CHORE_PRESETS.forEach((p,i) => {
+    const isAdded = existing.has(p.name);
+    const row = document.createElement('label');
+    row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:9px;border:1px solid var(--bdr);background:' + (isAdded ? 'var(--s-light)' : 'var(--bg)') + ';cursor:pointer;font-size:12px;font-weight:600;color:var(--txt);transition:.1s;';
+    const cb = document.createElement('input');
+    cb.type = 'checkbox'; cb.id = 'cp-' + i;
+    cb.style.cssText = 'width:14px;height:14px;accent-color:#667eea;flex-shrink:0;cursor:pointer;';
+    if (isAdded) { cb.checked = true; cb.disabled = true; row.style.opacity = '0.6'; }
+    const timeBadge = '<span style="margin-left:auto;font-size:10px;font-weight:700;padding:1px 6px;border-radius:8px;background:#e0f2fe;color:#0369a1;white-space:nowrap;">' + p.time + '</span>';
+    row.appendChild(cb);
+    row.innerHTML += p.name + timeBadge;
+    row.prepend(cb);
+    list.appendChild(row);
+  });
 }
+
+function closeAdd(){document.getElementById('add-modal').classList.remove('show');}
+
+function confirmAdd(){
+  const girl = addModalGirl;
+  const day = document.getElementById('ad').value;
+  const customName = document.getElementById('ac-name').value.trim();
+  const customTime = document.getElementById('ac-time').value;
+  const existing = (S.chores[girl][day]||[]).length;
+  const limit = CHORE_LIMITS[girl];
+
+  const selected = [];
+  CHORE_PRESETS.forEach((p,i) => {
+    const cb = document.getElementById('cp-' + i);
+    if (cb && cb.checked && !cb.disabled) selected.push({name:p.name,time:p.time});
+  });
+  if (customName) selected.push({name:customName,time:customTime});
+
+  if (selected.length === 0) { closeAdd(); return; }
+
+  const wouldExceed = existing + selected.length > limit;
+
+  closeAdd();
+
+  if (wouldExceed) {
+    if (girl === 'zariah') {
+      showAlert({hard:true,title:'Heads up!',msg:`Heads up! Zariah already has 3 chores today. You can\'t add any more for today.`});
+      return;
+    } else {
+      S.pendingAddChore = {girl,day,items:selected};
+      showAlert({hard:false,title:'Heads up!',msg:`Serenity would have ${existing + selected.length} chores on ${day}. Are you sure you want to add?`});
+      return;
+    }
+  }
+  doAddChores({girl,day,items:selected});
+}
+
 function doAddChore({girl,day,name,time}){
   if(!S.chores[girl][day]) S.chores[girl][day]=[];
   S.chores[girl][day].push({name,time}); sv(); renderChores();
+}
+function doAddChores({girl,day,items}){
+  if(!S.chores[girl][day]) S.chores[girl][day]=[];
+  items.forEach(it => S.chores[girl][day].push({name:it.name,time:it.time}));
+  sv(); renderChores();
 }
 
 function setCalView(v,btn){
