@@ -93,6 +93,12 @@
     .rbtn-e.active { background: var(--exc); color: #fff; }
     .rbtn-n { border-color: var(--needs); color: var(--needs); background: transparent; }
     .rbtn-n.active { background: var(--needs); color: #fff; }
+    .rbtn-nc { border-color: #94a3b8; color: #94a3b8; background: transparent; }
+    .rbtn-nc.active { background: #64748b; color: #fff; }
+    .cover-btn { padding: 3px 8px; border-radius: 14px; border: 1.5px solid #f472b6; color: #f472b6; background: transparent; font-size: 10px; font-weight: 800; cursor: pointer; font-family: 'Nunito', sans-serif; white-space: nowrap; transition: .12s; }
+    .cover-btn:hover { background: #fdf2f8; }
+    .covered-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 10px; background: #fdf2f8; border: 1px solid #f9a8d4; font-size: 10px; font-weight: 800; color: #be185d; white-space: nowrap; }
+    .kindness-badge { display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; border-radius: 10px; background: #fdf4ff; border: 1px solid #d8b4fe; font-size: 10px; font-weight: 800; color: #7e22ce; white-space: nowrap; }
     .edit-btn { background: none; border: none; cursor: pointer; color: var(--muted); font-size: 13px; padding: 2px; flex-shrink: 0; }
     .edit-btn:hover { color: #667eea; }
     .no-chores { text-align: center; padding: 20px; color: var(--muted); font-weight: 600; font-size: 13px; }
@@ -419,7 +425,7 @@
       <div style="font-weight:800;font-size:14px;margin-bottom:10px;color:var(--muted);">📋 Chore Log</div>
       <div class="report-filter">
         <select id="fg" onchange="renderHistory()"><option value="all">All Girls</option><option value="zariah">Zariah</option><option value="serenity">Serenity</option></select>
-        <select id="fs" onchange="renderHistory()"><option value="all">All Ratings</option><option value="excellent">Excellent Job!</option><option value="needs">Needs Work</option></select>
+        <select id="fs" onchange="renderHistory()"><option value="all">All Ratings</option><option value="excellent">Excellent Job!</option><option value="needs">Needs Work</option><option value="notcompleted">Not Started or Completed</option><option value="kindness">Acts of Kindness</option></select>
         <select id="fw" onchange="renderHistory()"><option value="4">Last 4 weeks</option><option value="8">Last 8 weeks</option><option value="all">All time</option></select>
       </div>
       <div class="card" style="overflow-x:auto;">
@@ -529,6 +535,19 @@
   </div>
 </div>
 
+<div class="overlay" id="cover-modal">
+  <div class="alert-box" style="border-top:5px solid #f472b6;">
+    <div class="alert-icon">🤝</div>
+    <div class="alert-title" style="color:#be185d;">Cover Sister's Chore?</div>
+    <div class="alert-msg" id="cover-msg">Which girl is stepping in to help?</div>
+    <div style="display:flex;gap:8px;margin-bottom:12px;">
+      <button id="cover-btn-z" style="flex:1;padding:10px;border-radius:10px;background:var(--z-light);color:var(--z-dark);border:1.5px solid var(--plum);font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;cursor:pointer;" onclick="confirmCover('zariah')">🌸 Zariah</button>
+      <button id="cover-btn-s" style="flex:1;padding:10px;border-radius:10px;background:var(--s-light);color:var(--s-dark);border:1.5px solid var(--mint);font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;cursor:pointer;" onclick="confirmCover('serenity')">🌸 Serenity</button>
+    </div>
+    <button class="alert-ok" style="background:var(--bg);color:var(--muted);border:1.5px solid var(--bdr);" onclick="document.getElementById('cover-modal').classList.remove('show')">Cancel</button>
+  </div>
+</div>
+
 <div class="overlay" id="ice-modal">
   <div class="ice-celebrate">
     <div style="font-size:44px;margin-bottom:10px;">🍦🎉🍦</div>
@@ -631,7 +650,9 @@ async function saveToSupabase() {
       chores: S.chores, ratings: S.ratings, notes: S.notes,
       rewards: S.rewards, granted: S.granted, iceDates: S.iceDates,
       pendingIceCream: S.pendingIceCream, calDate: S.calDate,
-      weekOffset: S.weekOffset, calView: S.calView
+      weekOffset: S.weekOffset, calView: S.calView,
+      covers: S.covers||{}, kindness: S.kindness||[],
+      customPresets: S.customPresets||[]
     };
     const { error } = await sb.from('chore_tracker').upsert({ id: 'singleton', data: payload, updated_at: new Date().toISOString() });
     if (error) throw error;
@@ -678,12 +699,23 @@ function getWeekStartForDate(dt) {
 function weekKeyFromDate(dt) { return dayKey(getWeekStartForDate(dt)); }
 function getWeekScore(wk) {
   let exc=0, total=0;
-  Object.entries(S.ratings).forEach(([k,v]) => { if (weekKeyFromDate(new Date(k.split('|')[0]))===wk) { total++; if(v==='excellent') exc++; } });
+  Object.entries(S.ratings).forEach(([k,v]) => {
+    if(v==='notcompleted') return; // not completed doesn't count toward total
+    if(weekKeyFromDate(new Date(k.split('|')[0]))===wk){total++;if(v==='excellent')exc++;}
+  });
+  // Add kindness acts for this week (count as excellent for team)
+  if(S.kindness) S.kindness.forEach(kn=>{if(weekKeyFromDate(new Date(kn.date))===wk){total++;exc++;}});
   return { exc, total, pct: total>0 ? Math.round(exc/total*100) : null };
 }
 function getWeekScoreForGirl(wk, girl) {
   let exc=0, total=0;
-  Object.entries(S.ratings).forEach(([k,v]) => { const p=k.split('|'); if(p[1]!==girl) return; if(weekKeyFromDate(new Date(p[0]))===wk){total++;if(v==='excellent')exc++;} });
+  Object.entries(S.ratings).forEach(([k,v]) => {
+    const p=k.split('|'); if(p[1]!==girl) return;
+    if(v==='notcompleted') return;
+    if(weekKeyFromDate(new Date(p[0]))===wk){total++;if(v==='excellent')exc++;}
+  });
+  // Add kindness acts BY this girl for this week
+  if(S.kindness) S.kindness.forEach(kn=>{if(kn.coveredBy===girl&&weekKeyFromDate(new Date(kn.date))===wk){total++;exc++;}});
   return { exc, total, pct: total>0 ? Math.round(exc/total*100) : null };
 }
 function getLast5Weeks() {
@@ -800,15 +832,66 @@ function renderChores() {
     if(!chores.length){list.innerHTML='<div class="no-chores">🎉 No chores today!</div>';return;}
     chores.forEach((c,i)=>{
       const rk=`${k}|${girl}|${i}`; const r=S.ratings[rk]||'';
-      const item=document.createElement('div'); item.className='chore-item';
-      item.innerHTML=`<span class="chore-time ${getTC(c.time)}">${c.time}</span><span class="chore-name">${c.name}</span><div class="rating-btns"><button class="rbtn rbtn-e ${r==='excellent'?'active':''}" onclick="setRating('${girl}',${i},'excellent')">⭐ Excellent!</button><button class="rbtn rbtn-n ${r==='needs'?'active':''}" onclick="setRating('${girl}',${i},'needs')">Needs Work</button></div><button class="edit-btn" onclick="openEdit('${girl}',${i})">✏️</button>`;
+      const coverKey=`${k}|${girl}|${i}|cover`;
+      const coverInfo=S.covers?S.covers[coverKey]:null;
+      const item=document.createElement('div');
+      item.className='chore-item';
+      item.style.flexWrap='wrap';
+      // Build rating row
+      let coverHtml='';
+      if(coverInfo){
+        const covGn=coverInfo.coveredBy==='zariah'?'Zariah':'Serenity';
+        coverHtml=`<div style="width:100%;margin-top:5px;display:flex;align-items:center;gap:6px;"><span class="kindness-badge">🤝 Covered by ${covGn}</span><span style="font-size:10px;color:var(--muted);font-weight:600;">counts toward her score</span></div>`;
+      }
+      const showCoverBtn = r==='notcompleted' && !coverInfo;
+      item.innerHTML=`<span class="chore-time ${getTC(c.time)}">${c.time}</span><span class="chore-name">${c.name}</span><div class="rating-btns" style="flex-wrap:wrap;gap:3px;"><button class="rbtn rbtn-e ${r==='excellent'?'active':''}" onclick="setRating('${girl}',${i},'excellent')">⭐ Excellent!</button><button class="rbtn rbtn-n ${r==='needs'?'active':''}" onclick="setRating('${girl}',${i},'needs')">Needs Work</button><button class="rbtn rbtn-nc ${r==='notcompleted'?'active':''}" onclick="setRating('${girl}',${i},'notcompleted')">Not Started or Completed</button>${showCoverBtn?`<button class="cover-btn" onclick="openCoverModal('${girl}',${i},'${k}')">🤝 Sister covers?</button>`:''}</div><button class="edit-btn" onclick="openEdit('${girl}',${i})">✏️</button>${coverHtml}`;
       list.appendChild(item);
     });
   });
 }
 function setRating(girl,idx,rating){
   const k=curKey(); const rk=`${k}|${girl}|${idx}`;
-  if(S.ratings[rk]===rating) delete S.ratings[rk]; else S.ratings[rk]=rating;
+  const coverKey=`${k}|${girl}|${idx}|cover`;
+  if(S.ratings[rk]===rating){
+    delete S.ratings[rk];
+  } else {
+    S.ratings[rk]=rating;
+    // If re-rated away from notcompleted, remove any cover
+    if(rating!=='notcompleted'&&S.covers&&S.covers[coverKey]){
+      delete S.covers[coverKey];
+    }
+  }
+  sv(); renderChores(); renderTeamBanner();
+}
+
+let coverTarget=null;
+
+function openCoverModal(girl,idx,dateKey){
+  coverTarget={girl,idx,dateKey};
+  const otherGirl=girl==='zariah'?'Serenity':'Zariah';
+  const chore=(S.chores[girl][S.curDay]||[])[idx];
+  document.getElementById('cover-msg').textContent=
+    `"${chore?chore.name:'this chore'}" wasn't started — which girl is stepping up to cover it?`;
+  // Hide the button for the girl who owns the chore
+  document.getElementById('cover-btn-z').style.display=girl==='zariah'?'none':'';
+  document.getElementById('cover-btn-s').style.display=girl==='serenity'?'none':'';
+  document.getElementById('cover-modal').classList.add('show');
+}
+
+function confirmCover(coveringGirl){
+  if(!coverTarget) return;
+  const{girl,idx,dateKey}=coverTarget;
+  if(!S.covers) S.covers={};
+  const coverKey=`${dateKey}|${girl}|${idx}|cover`;
+  S.covers[coverKey]={coveredBy:coveringGirl,choreName:(S.chores[girl][S.curDay]||[])[idx]?.name||'',date:dateKey,ownedBy:girl};
+  // Add an excellent rating in the covering girl's name for this act of kindness
+  // stored as a separate kindness entry so it doesn't interfere with the owner's chore
+  if(!S.kindness) S.kindness=[];
+  // prevent duplicates
+  S.kindness=S.kindness.filter(kn=>!(kn.coverKey===coverKey));
+  S.kindness.push({coverKey,coveredBy:coveringGirl,ownedBy:girl,date:dateKey,choreName:(S.chores[girl][S.curDay]||[])[idx]?.name||''});
+  document.getElementById('cover-modal').classList.remove('show');
+  coverTarget=null;
   sv(); renderChores(); renderTeamBanner();
 }
 function saveDayData(){
@@ -1135,11 +1218,20 @@ function renderParentScores(){
     const thisPct=thisTot>0?Math.round(thisExc/thisTot*100):null;
     const qualWeeks=getLast5Weeks().filter(w=>{const sc=getWeekScoreForGirl(w.wk,girl);return sc.pct!==null&&sc.pct>=80;}).length;
     const card=document.createElement('div'); card.className='pscore-card';
+    const kindnessTotal=(S.kindness||[]).filter(kn=>kn.coveredBy===girl).length;
+    const kindnessThisWeek=(S.kindness||[]).filter(kn=>{
+      if(kn.coveredBy!==girl) return false;
+      return weekKeyFromDate(new Date(kn.date))===ws0;
+    }).length;
+    const notStartedTotal=Object.entries(S.ratings).filter(([k,v])=>k.split('|')[1]===girl&&v==='notcompleted').length;
     card.innerHTML=`<div class="pscore-header"><div class="avatar av-${g}">${girl==='zariah'?'Z':'S'}</div><div class="pscore-name">🌸 ${girl.charAt(0).toUpperCase()+girl.slice(1)}</div></div>
     <div class="pscore-rows">
       <div class="pscore-row"><span class="pscore-label">This week</span><span class="pscore-val" style="color:${thisPct>=80?'var(--mint)':thisPct!==null?'var(--needs)':'var(--muted)'}">${thisPct!==null?thisPct+'%':'No data'}</span></div>
       <div class="pscore-row"><span class="pscore-label">All-time rate</span><span class="pscore-val" style="color:${allPct>=80?'var(--mint)':allPct!==null?'var(--gold)':'var(--muted)'}">${allPct!==null?allPct+'%':'No data'}</span></div>
-      <div class="pscore-row"><span class="pscore-label">Total rated</span><span class="pscore-val">${allTot} chores</span></div>
+      <div class="pscore-row"><span class="pscore-label">Total rated chores</span><span class="pscore-val">${allTot}</span></div>
+      <div class="pscore-row"><span class="pscore-label">Not Started or Completed (all time)</span><span class="pscore-val" style="color:${notStartedTotal>0?'var(--needs)':'var(--mint)'}">${notStartedTotal}</span></div>
+      <div class="pscore-row"><span class="pscore-label">🤝 Acts of kindness</span><span class="pscore-val" style="color:#7e22ce;font-weight:900;">${kindnessTotal} total</span></div>
+      <div class="pscore-row"><span class="pscore-label">🤝 Kindness this week</span><span class="pscore-val" style="color:#7e22ce;">${kindnessThisWeek}</span></div>
       <div class="pscore-row"><span class="pscore-label">Qualifying weeks (last 5)</span><span class="pscore-val" style="color:${qualWeeks>=4?'var(--mint)':'var(--muted)'}">${qualWeeks} / 5</span></div>
     </div>
     <div class="pbar" style="margin-top:10px;"><div class="pbar-fill ${g==='z'?'fill-z':'fill-s'}" style="width:${allPct||0}%"></div></div>`;
@@ -1158,7 +1250,11 @@ function renderIceHistory(){
 }
 function renderStats(){
   let allExc=0, allTot=0;
-  Object.entries(S.ratings).forEach(([k,v])=>{allTot++;if(v==='excellent')allExc++;});
+  Object.entries(S.ratings).forEach(([k,v])=>{
+    if(v==='notcompleted') return;
+    allTot++;if(v==='excellent')allExc++;
+  });
+  if(S.kindness) S.kindness.forEach(()=>{allTot++;allExc++;});
   const teamPct = allTot>0 ? Math.round(allExc/allTot*100) : null;
   const prog = getTeamProgress();
   const hero = document.getElementById('team-pct-hero');
@@ -1185,14 +1281,26 @@ function renderHistory(){
   const fg=document.getElementById('fg').value; const fs=document.getElementById('fs').value; const fw=document.getElementById('fw').value;
   const cutoff=new Date(); if(fw!=='all') cutoff.setDate(cutoff.getDate()-parseInt(fw)*7);
   const rows=[];
-  Object.entries(S.ratings).forEach(([k,v])=>{
-    const parts=k.split('|'); const ds=parts[0],girl=parts[1],idx=parseInt(parts[2]);
-    const dt=new Date(ds);
-    if(fw!=='all'&&dt<cutoff) return; if(fg!=='all'&&girl!==fg) return;
-    if(fs==='excellent'&&v!=='excellent') return; if(fs==='needs'&&v!=='needs') return;
-    const dow=DAYS[dt.getDay()===0?6:dt.getDay()-1]; const c=(S.chores[girl][dow]||[])[idx];
-    rows.push({date:ds,girl,chore:c?c.name:'(deleted)',time:c?c.time:'—',rating:v,dt});
-  });
+  if(fs!=='kindness'){
+    Object.entries(S.ratings).forEach(([k,v])=>{
+      const parts=k.split('|'); const ds=parts[0],girl=parts[1],idx=parseInt(parts[2]);
+      const dt=new Date(ds);
+      if(fw!=='all'&&dt<cutoff) return; if(fg!=='all'&&girl!==fg) return;
+      if(fs==='excellent'&&v!=='excellent') return;
+      if(fs==='needs'&&v!=='needs') return;
+      if(fs==='notcompleted'&&v!=='notcompleted') return;
+      const dow=DAYS[dt.getDay()===0?6:dt.getDay()-1]; const c=(S.chores[girl][dow]||[])[idx];
+      rows.push({date:ds,girl,chore:c?c.name:'(deleted)',time:c?c.time:'—',rating:v,dt,type:'rated'});
+    });
+  }
+  if(fs==='all'||fs==='kindness'){
+    if(S.kindness) S.kindness.forEach(kn=>{
+      const dt=new Date(kn.date);
+      if(fw!=='all'&&dt<cutoff) return;
+      if(fg!=='all'&&kn.coveredBy!==fg) return;
+      rows.push({date:kn.date,girl:kn.coveredBy,chore:kn.choreName,time:'—',rating:'kindness',ownedBy:kn.ownedBy,dt,type:'kindness'});
+    });
+  }
   rows.sort((a,b)=>b.dt-a.dt);
   const tbody=document.getElementById('report-body'); tbody.innerHTML='';
   const empty=document.getElementById('report-empty');
@@ -1201,8 +1309,13 @@ function renderHistory(){
   rows.forEach(r=>{
     const tr=document.createElement('tr');
     const gl=r.girl==='zariah'?'🌸 Zariah':'🌸 Serenity';
-    const b=r.rating==='excellent'?'<span class="badge-e">⭐ Excellent!</span>':'<span class="badge-n">Needs Work</span>';
-    tr.innerHTML=`<td>${r.date}</td><td>${gl}</td><td style="font-weight:600;font-size:12px;">${r.chore}</td><td><span class="chore-time ${getTC(r.time)}">${r.time}</span></td><td>${b}</td>`;
+    let b;
+    if(r.rating==='excellent') b='<span class="badge-e">⭐ Excellent!</span>';
+    else if(r.rating==='needs') b='<span class="badge-n">Needs Work</span>';
+    else if(r.rating==='notcompleted') b='<span style="display:inline-block;padding:2px 7px;border-radius:10px;background:#f1f5f9;color:#64748b;font-weight:700;font-size:10px;">Not Started or Completed</span>';
+    else if(r.rating==='kindness'){const own=r.ownedBy==='zariah'?'Zariah':'Serenity';b=`<span class="kindness-badge">🤝 Covered ${own}'s chore</span>`;}
+    else b='<span class="badge-p">—</span>';
+    tr.innerHTML=`<td>${r.date}</td><td>${gl}</td><td style="font-weight:600;font-size:12px;">${r.chore}</td><td>${r.time!=='—'?`<span class="chore-time ${getTC(r.time)}">${r.time}</span>`:'—'}</td><td>${b}</td>`;
     tbody.appendChild(tr);
   });
 }
