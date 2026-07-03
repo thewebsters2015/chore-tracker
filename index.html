@@ -567,7 +567,8 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-const CHORE_LIMITS = { zariah: 3, serenity: 4 };
+const CHORE_LIMITS = { zariah: 4, serenity: 4 };
+const ZARIAH_OVERRIDE_LIMIT = 5;
 
 const LIBRARY = [
   { name: 'Sticker collection pack', price: '~$3' },
@@ -582,13 +583,13 @@ const LIBRARY = [
 
 const BASE_CHORES = {
   zariah: {
-    Monday:    [{ name: 'Clean table, bib, and under chair after eating', time: 'After School' }, { name: 'Clean and organize your side of the bedroom (to include under bed)', time: 'After School' }],
-    Tuesday:   [{ name: 'Clean table, bib, and under chair after eating', time: 'After School' }, { name: 'Fresh water and food for outside cat bowls', time: 'Evening' }, { name: 'Clean and organize vanity area', time: 'Evening' }],
-    Wednesday: [{ name: 'Clean table, bib, and under chair after eating', time: 'After School' }, { name: 'Organize kiddo bookshelves', time: 'Evening' }],
-    Thursday:  [{ name: 'Clean table, bib, and under chair after eating', time: 'After School' }, { name: 'Tidy arrival center', time: 'Evening' }],
-    Friday:    [{ name: 'Clean table, bib, and under chair after eating', time: 'After School' }, { name: 'Clean and organize your side of the bedroom (to include under bed)', time: 'After School' }, { name: 'Wash dishes and put away', time: 'Evening' }],
-    Saturday:  [{ name: 'Clean table, bib, and under chair after eating', time: 'After School' }, { name: 'Vacuum, cat walk, bedroom, and living room rug', time: 'Evening' }, { name: 'Clean toilet and tub', time: 'Evening' }],
-    Sunday:    [{ name: 'Clean table, bib, and under chair after eating', time: 'Evening' }, { name: 'Laundry - wash, dry, fold, and put away', time: 'After School' }, { name: 'Tidy arrival center', time: 'Evening' }]
+    Monday:    [{ name: 'Clean table, bib, and under chair after eating', time: 'After School' }, { name: 'Clean and organize your side of the bedroom (to include under bed)', time: 'After School' }, { name: 'Clean and organize vanity area', time: 'Evening' }, { name: 'Properly and thoroughly wash underarms, dry, use deodorant, and use lotion (without reminder)', time: 'Evening' }],
+    Tuesday:   [{ name: 'Clean table, bib, and under chair after eating', time: 'After School' }, { name: 'Fresh water and food for outside cat bowls', time: 'Evening' }, { name: 'Laundry - wash, fully dry, fold, and put away towels, bedding, and clothing', time: 'After School' }, { name: 'Properly and thoroughly wash underarms, dry, use deodorant, and use lotion (without reminder)', time: 'Evening' }],
+    Wednesday: [{ name: 'Clean table, bib, and under chair after eating', time: 'After School' }, { name: 'Organize kiddo bookshelves to include standalone bookshelves', time: 'Evening' }, { name: 'Coffee table - organize and tidy', time: 'After School' }, { name: 'Properly and thoroughly wash underarms, dry, use deodorant, and use lotion (without reminder)', time: 'Evening' }],
+    Thursday:  [{ name: 'Clean table, bib, and under chair after eating', time: 'After School' }, { name: 'Tidy arrival center', time: 'Evening' }, { name: 'Clean toilet and tub, clean the floor and organize items in bathroom', time: 'Evening' }, { name: 'Properly and thoroughly wash underarms, dry, use deodorant, and use lotion (without reminder)', time: 'Evening' }],
+    Friday:    [{ name: 'Clean table, bib, and under chair after eating', time: 'After School' }, { name: 'Clean and organize your side of the bedroom (to include under bed)', time: 'After School' }, { name: 'Wash dishes and put away in proper place', time: 'Evening' }, { name: 'Properly and thoroughly wash underarms, dry, use deodorant, and use lotion (without reminder)', time: 'Evening' }],
+    Saturday:  [{ name: 'Clean table, bib, and under chair after eating', time: 'After School' }, { name: 'Vacuum, catwalk, bedroom, living room rug, kitchen rug, and dining room', time: 'Evening' }, { name: 'Clean toilet and tub, clean the floor and organize items in bathroom', time: 'Evening' }, { name: 'Properly and thoroughly wash underarms, dry, use deodorant, and use lotion (without reminder)', time: 'Evening' }],
+    Sunday:    [{ name: 'Clean table, bib, and under chair after eating', time: 'Evening' }, { name: 'Laundry - wash, fully dry, fold, and put away towels, bedding, and clothing', time: 'After School' }, { name: 'Tidy arrival center', time: 'Evening' }, { name: 'Properly and thoroughly wash underarms, dry, use deodorant, and use lotion (without reminder)', time: 'Evening' }]
   },
   serenity: {
     Monday:    [{ name: 'Clean table, bib, and under chair after eating', time: 'After School' }, { name: 'Dishes', time: 'Evening' }, { name: 'Laundry - wash, dry, fold, and put away', time: 'After School' }, { name: 'Feed cats and give fresh water', time: 'Evening' }],
@@ -600,6 +601,53 @@ const BASE_CHORES = {
     Sunday:    [{ name: 'Clean table, bib, and under chair after eating', time: 'After School' }, { name: 'Organize kiddo bookshelves and cubbies', time: 'After School' }, { name: 'Trash', time: 'After School' }]
   }
 };
+
+// ── Zariah v6 schedule (through July 2, 2026) ──────────────────────────────
+const ZARIAH_V6 = {
+  Monday:    [{ name: 'Clean table, bib, and under chair after eating', time: 'After School' }, { name: 'Clean and organize your side of the bedroom (to include under bed)', time: 'After School' }],
+  Tuesday:   [{ name: 'Clean table, bib, and under chair after eating', time: 'After School' }, { name: 'Fresh water and food for outside cat bowls', time: 'Evening' }, { name: 'Clean and organize vanity area', time: 'Evening' }],
+  Wednesday: [{ name: 'Clean table, bib, and under chair after eating', time: 'After School' }, { name: 'Organize kiddo bookshelves', time: 'Evening' }],
+  Thursday:  [{ name: 'Clean table, bib, and under chair after eating', time: 'After School' }, { name: 'Tidy arrival center', time: 'Evening' }],
+  Friday:    [{ name: 'Clean table, bib, and under chair after eating', time: 'After School' }, { name: 'Clean and organize your side of the bedroom (to include under bed)', time: 'After School' }, { name: 'Wash dishes and put away', time: 'Evening' }],
+  Saturday:  [{ name: 'Clean table, bib, and under chair after eating', time: 'After School' }, { name: 'Vacuum, cat walk, bedroom, and living room rug', time: 'Evening' }, { name: 'Clean toilet and tub', time: 'Evening' }],
+  Sunday:    [{ name: 'Clean table, bib, and under chair after eating', time: 'Evening' }, { name: 'Laundry - wash, dry, fold, and put away', time: 'After School' }, { name: 'Tidy arrival center', time: 'Evening' }]
+};
+
+// ── Zariah v8 schedule (July 3, 2026 onward) ────────────────────────────────
+const ZARIAH_V8 = {
+  Monday:    [{ name: 'Clean table, bib, and under chair after eating', time: 'After School' }, { name: 'Clean and organize your side of the bedroom (to include under bed)', time: 'After School' }, { name: 'Clean and organize vanity area', time: 'Evening' }, { name: 'Properly and thoroughly wash underarms, dry, use deodorant, and use lotion (without reminder)', time: 'Evening' }],
+  Tuesday:   [{ name: 'Clean table, bib, and under chair after eating', time: 'After School' }, { name: 'Fresh water and food for outside cat bowls', time: 'Evening' }, { name: 'Laundry - wash, fully dry, fold, and put away towels, bedding, and clothing', time: 'After School' }, { name: 'Properly and thoroughly wash underarms, dry, use deodorant, and use lotion (without reminder)', time: 'Evening' }],
+  Wednesday: [{ name: 'Clean table, bib, and under chair after eating', time: 'After School' }, { name: 'Organize kiddo bookshelves to include standalone bookshelves', time: 'Evening' }, { name: 'Coffee table - organize and tidy', time: 'After School' }, { name: 'Properly and thoroughly wash underarms, dry, use deodorant, and use lotion (without reminder)', time: 'Evening' }],
+  Thursday:  [{ name: 'Clean table, bib, and under chair after eating', time: 'After School' }, { name: 'Tidy arrival center', time: 'Evening' }, { name: 'Clean toilet and tub, clean the floor and organize items in bathroom', time: 'Evening' }, { name: 'Properly and thoroughly wash underarms, dry, use deodorant, and use lotion (without reminder)', time: 'Evening' }],
+  Friday:    [{ name: 'Clean table, bib, and under chair after eating', time: 'After School' }, { name: 'Clean and organize your side of the bedroom (to include under bed)', time: 'After School' }, { name: 'Wash dishes and put away in proper place', time: 'Evening' }, { name: 'Properly and thoroughly wash underarms, dry, use deodorant, and use lotion (without reminder)', time: 'Evening' }],
+  Saturday:  [{ name: 'Clean table, bib, and under chair after eating', time: 'After School' }, { name: 'Vacuum, catwalk, bedroom, living room rug, kitchen rug, and dining room', time: 'Evening' }, { name: 'Clean toilet and tub, clean the floor and organize items in bathroom', time: 'Evening' }, { name: 'Properly and thoroughly wash underarms, dry, use deodorant, and use lotion (without reminder)', time: 'Evening' }],
+  Sunday:    [{ name: 'Clean table, bib, and under chair after eating', time: 'Evening' }, { name: 'Laundry - wash, fully dry, fold, and put away towels, bedding, and clothing', time: 'After School' }, { name: 'Tidy arrival center', time: 'Evening' }, { name: 'Properly and thoroughly wash underarms, dry, use deodorant, and use lotion (without reminder)', time: 'Evening' }]
+};
+
+// V8 effective date — July 3, 2026
+const ZARIAH_V8_START = '2026-07-03';
+
+/**
+ * Returns the correct chore list for a given girl, day-of-week, and date key.
+ * For Zariah: uses v6 for dates before ZARIAH_V8_START, v8 from that date onward.
+ * For any girl: if S.chores has been customized for that day (user edited/added),
+ *   those overrides take priority only on dates >= V8 start (they were made on the new schedule).
+ * For historical dates (before V8 start), always returns the versioned schedule unchanged
+ *   so past calendar ratings display correctly.
+ */
+function getChoresForDate(girl, dow, dateKey) {
+  if (girl !== 'zariah') {
+    return S.chores[girl][dow] || [];
+  }
+  // Zariah date-versioned lookup
+  if (dateKey < ZARIAH_V8_START) {
+    // Historical — always use v6 so old ratings map correctly
+    return ZARIAH_V6[dow] || [];
+  } else {
+    // Current / future — use S.chores (which starts as v8 and may have parent edits)
+    return S.chores.zariah[dow] || [];
+  }
+}
 
 let S = {
   chores: JSON.parse(JSON.stringify(BASE_CHORES)),
@@ -740,6 +788,37 @@ function getGrantedThisWeek(girl) {
   return S.granted.filter(g=>{ if(g.girl!==girl) return false; const gd=new Date(g.isoDate||g.date); return gd>=ws&&gd<we; }).length;
 }
 
+function showZariahLimitAlert(existing, items){
+  const box=document.getElementById('alert-box');
+  const icon=document.getElementById('alert-icon');
+  const title=document.getElementById('alert-title');
+  const msg=document.getElementById('alert-msg');
+  const btns=document.getElementById('alert-btns');
+  box.className='alert-box soft-warn';
+  icon.textContent='⚠️';
+  title.className='alert-title orange';
+  title.textContent='Heads up!';
+  msg.textContent=`Zariah already has ${existing} chores today (the daily limit is 4). You can override to allow up to 5, or cancel.`;
+  btns.innerHTML='';
+  const row=document.createElement('div'); row.style.cssText='display:flex;gap:8px;flex-direction:column;';
+  // Cancel button
+  const bc=document.createElement('button');
+  bc.style.cssText='padding:10px;border-radius:10px;background:var(--bg);color:var(--muted);border:1.5px solid var(--bdr);font-family:Nunito,sans-serif;font-weight:800;font-size:13px;cursor:pointer;width:100%;';
+  bc.textContent='Cancel';
+  bc.onclick=()=>{ S.pendingAddChore=null; document.getElementById('alert-modal').classList.remove('show'); };
+  // Override button
+  const bo=document.createElement('button');
+  bo.style.cssText='padding:10px;border-radius:10px;background:#667eea;color:#fff;border:none;font-family:Nunito,sans-serif;font-weight:800;font-size:13px;cursor:pointer;width:100%;';
+  bo.textContent='Override — Add Anyway (up to 5 chores)';
+  bo.onclick=()=>{
+    document.getElementById('alert-modal').classList.remove('show');
+    if(S.pendingAddChore){ doAddChores(S.pendingAddChore); S.pendingAddChore=null; }
+  };
+  row.appendChild(bo); row.appendChild(bc);
+  btns.appendChild(row);
+  document.getElementById('alert-modal').classList.add('show');
+}
+
 function showAlert(opts) {
   const box=document.getElementById('alert-box'); const icon=document.getElementById('alert-icon');
   const title=document.getElementById('alert-title'); const msg=document.getElementById('alert-msg'); const btns=document.getElementById('alert-btns');
@@ -823,7 +902,7 @@ function renderChores() {
   const k=curKey();
   const girls=S.gf==='both'?['zariah','serenity']:[S.gf];
   girls.forEach(girl=>{
-    const chores=S.chores[girl][S.curDay]||[];
+    const chores=getChoresForDate(girl, S.curDay, curKey());
     const g=girl==='zariah'?'z':'s';
     const card=document.createElement('div'); card.className=`card ${girl}`;
     const limit=CHORE_LIMITS[girl];
@@ -872,7 +951,7 @@ let coverTarget=null;
 function openCoverModal(girl,idx,dateKey){
   coverTarget={girl,idx,dateKey};
   const otherGirl=girl==='zariah'?'Serenity':'Zariah';
-  const chore=(S.chores[girl][S.curDay]||[])[idx];
+  const chore=(getChoresForDate(girl, S.curDay, curKey()))[idx];
   document.getElementById('cover-msg').textContent=
     `"${chore?chore.name:'this chore'}" wasn't started — which girl is stepping up to cover it?`;
   // Hide the button for the girl who owns the chore
@@ -886,13 +965,13 @@ function confirmCover(coveringGirl){
   const{girl,idx,dateKey}=coverTarget;
   if(!S.covers) S.covers={};
   const coverKey=`${dateKey}|${girl}|${idx}|cover`;
-  S.covers[coverKey]={coveredBy:coveringGirl,choreName:(S.chores[girl][S.curDay]||[])[idx]?.name||'',date:dateKey,ownedBy:girl};
+  S.covers[coverKey]={coveredBy:coveringGirl,choreName:(getChoresForDate(girl, S.curDay, dateKey))[idx]?.name||'',date:dateKey,ownedBy:girl};
   // Add an excellent rating in the covering girl's name for this act of kindness
   // stored as a separate kindness entry so it doesn't interfere with the owner's chore
   if(!S.kindness) S.kindness=[];
   // prevent duplicates
   S.kindness=S.kindness.filter(kn=>!(kn.coverKey===coverKey));
-  S.kindness.push({coverKey,coveredBy:coveringGirl,ownedBy:girl,date:dateKey,choreName:(S.chores[girl][S.curDay]||[])[idx]?.name||''});
+  S.kindness.push({coverKey,coveredBy:coveringGirl,ownedBy:girl,date:dateKey,choreName:(getChoresForDate(girl, S.curDay, dateKey))[idx]?.name||''});
   document.getElementById('cover-modal').classList.remove('show');
   coverTarget=null;
   sv(); renderChores(); renderTeamBanner();
@@ -956,7 +1035,7 @@ function getChorePresets(){
 
 function openEdit(girl,idx){
   S.editTarget={girl,idx,day:S.curDay};
-  const c=S.chores[girl][S.curDay][idx];
+  const c=getChoresForDate(girl, S.curDay, curKey())[idx];
   document.getElementById('edit-title').textContent='Edit Chore — '+(girl==='zariah'?'Zariah':'Serenity');
   document.getElementById('ec-name').value='';
   document.getElementById('ec-time').value='After School';
@@ -1099,7 +1178,14 @@ function confirmAdd(){
 
   if(wouldTotal > limit){
     if(girl==='zariah'){
-      showAlert({hard:true,title:'Heads up!',msg:"Heads up! Zariah already has 3 chores today. You can't add any more for today."});
+      // Check if already at the override cap of 5
+      if(existing >= ZARIAH_OVERRIDE_LIMIT){
+        showAlert({hard:true,title:'Maximum Reached!',msg:"Zariah already has 5 chores today — that's the absolute maximum even with Override. No more can be added for today."});
+        return;
+      }
+      // Between limit (4) and override cap (5): show Override option
+      S.pendingAddChore={girl,day,items:selectedItems};
+      showZariahLimitAlert(existing, selectedItems);
       return;
     } else {
       S.pendingAddChore={girl,day,items:selectedItems};
@@ -1144,7 +1230,7 @@ function renderCalendar(){
     const dots=document.createElement('div'); dots.className='cal-dots';
     const dow=DAYS[dt.getDay()===0?6:dt.getDay()-1];
     ['zariah','serenity'].forEach(girl=>{
-      (S.chores[girl][dow]||[]).forEach((_,i)=>{
+      (getChoresForDate(girl, dow, k)).forEach((_,i)=>{
         const rk=`${k}|${girl}|${i}`; if(S.ratings[rk]){const dot=document.createElement('div');dot.className='cal-dot '+(S.ratings[rk]==='excellent'?'dot-e':'dot-n');dots.appendChild(dot);}
       });
     });
@@ -1174,7 +1260,7 @@ function renderWeek(){
     const body=document.createElement('div'); body.className='week-body'; let has=false;
     ['zariah','serenity'].forEach(girl=>{
       const pfx=girl==='zariah'?'Z:':'S:';
-      (S.chores[girl][dow]||[]).forEach((c,idx)=>{
+      (getChoresForDate(girl, dow, k)).forEach((c,idx)=>{
         const rk=`${k}|${girl}|${idx}`; const r=S.ratings[rk];
         const dot=document.createElement('div'); dot.className='week-dot '+(r==='excellent'?'e':r==='needs'?'n':'p');
         dot.textContent=pfx+c.name.slice(0,12); body.appendChild(dot); has=true;
@@ -1204,7 +1290,7 @@ function showCalDay(k,dow,dt,cell,view){
   const ds=dt.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
   let html=`<div class="card" style="margin-top:8px;"><div style="font-weight:800;font-size:14px;margin-bottom:10px;">${ds}</div>`;
   ['zariah','serenity'].forEach(girl=>{
-    const cs=S.chores[girl][dow]||[]; if(!cs.length) return;
+    const cs=getChoresForDate(girl, dow, k); if(!cs.length) return;
     html+=`<div style="margin-bottom:9px;"><div style="font-weight:800;font-size:12px;margin-bottom:5px;">🌸 ${girl.charAt(0).toUpperCase()+girl.slice(1)}</div>`;
     cs.forEach((c,i)=>{const rk=`${k}|${girl}|${i}`;const r=S.ratings[rk];const b=r==='excellent'?'<span class="badge-e">⭐ Excellent!</span>':r==='needs'?'<span class="badge-n">Needs Work</span>':'<span class="badge-p">Pending</span>';html+=`<div style="display:flex;align-items:center;justify-content:space-between;padding:5px 8px;border-radius:8px;border:1px solid var(--bdr);margin-bottom:3px;background:var(--bg);font-size:11px;"><span style="font-weight:600">${c.name}</span>${b}</div>`;});
     html+='</div>';
@@ -1368,7 +1454,7 @@ function renderHistory(){
       if(fs==='excellent'&&v!=='excellent') return;
       if(fs==='needs'&&v!=='needs') return;
       if(fs==='notcompleted'&&v!=='notcompleted') return;
-      const dow=DAYS[dt.getDay()===0?6:dt.getDay()-1]; const c=(S.chores[girl][dow]||[])[idx];
+      const dow=DAYS[dt.getDay()===0?6:dt.getDay()-1]; const c=(getChoresForDate(girl, dow, ds))[idx];
       rows.push({date:ds,girl,chore:c?c.name:'(deleted)',time:c?c.time:'—',rating:v,dt,type:'rated'});
     });
   }
@@ -1414,7 +1500,7 @@ function renderTomorrow(){
   const con=document.getElementById('tomorrow-cards');
   con.innerHTML='';
   ['zariah','serenity'].forEach(girl=>{
-    const chores=S.chores[girl][tomDay]||[];
+    const chores=getChoresForDate(girl, tomDay, dayKey(tomDate));
     const g=girl==='zariah'?'z':'s';
     const gn=girl.charAt(0).toUpperCase()+girl.slice(1);
     const card=document.createElement('div'); card.className='card '+girl;
